@@ -1,0 +1,50 @@
+
+
+
+* Development
+
+To work on this library run setup.py in develop mode to create a symlink to your checked out project.
+#+BEGIN_SRC bash
+python3 setup.py develop
+#+END_SRC
+
+
+** Testing
+#+BEGIN_SRC bash
+pytest
+#+END_SRC
+
+** Examples
+Below are a few examples of using this library to knock up some quick examples.
+*** Using different rendering contexts
+Using glut context
+#+BEGIN_SRC python :session :results file
+from hgl.context.glut_context import context
+context(version=(4, 3)).save(filename='/tmp/test_glut_context.png')
+#+END_SRC
+
+#+RESULTS:
+[[file:/tmp/test_glut_context.png]]
+
+Using pygame context
+#+BEGIN_SRC python :session :results file
+from hgl.context.pygame_context import context
+context(version=(4, 3)).save(filename='/tmp/test_pyame_context.png')
+#+END_SRC
+
+#+RESULTS:
+[[file:]]
+
+
+If you want to modify the defaults you can just inherit the context and replace the methods.
+#+BEGIN_SRC python :session :results file
+from hgl.context.pygame_context import context
+
+class custom_context(context):
+    pass
+
+my_ctx = custom_context(version=(4,3))
+my_ctx.save(filename='/tmp/test_custom_context.png')
+#+END_SRC
+
+#+RESULTS:
