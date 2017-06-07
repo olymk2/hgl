@@ -79,8 +79,16 @@ class template_context(object):
         GL.glEnableVertexAttribArray(self.position)
 
         # describe the data layout
+        # GL.glVertexAttribPointer(
+        #     self.position, 4, GL.GL_FLOAT, False, 0, ctypes.c_void_p(0))
+
         GL.glVertexAttribPointer(
-            self.position, 4, GL.GL_FLOAT, False, 0, ctypes.c_void_p(0))
+            index=self.position,
+            size=4,
+            type=GL.GL_FLOAT,
+            normalized=GL.GL_FALSE,
+            stride=0,
+            pointer=ctypes.c_void_p(0))
 
         # Copy data to the buffer
         GL.glBufferData(
@@ -93,7 +101,7 @@ class template_context(object):
 
     def draw_data(self):
         GL.glBindVertexArray(self.vertex_array_object)
-        GL.glDrawArrays(GL.GL_TRIANGLES, 0, 3)
+        GL.glDrawArrays(mode=GL.GL_TRIANGLES, first=0, count=3)
         GL.glBindVertexArray(0)
 
     def draw(self):
