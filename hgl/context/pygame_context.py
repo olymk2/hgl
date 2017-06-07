@@ -57,3 +57,7 @@ class context(template_context):
                     running = False
             self.render()
         pygame_sdl2.quit()
+
+    def quit(self):
+        pygame_sdl2.display.quit()
+        pygame_sdl2.quit()

@@ -108,3 +108,7 @@ class context(template_context):
 
     def run(self):
         Gtk.main()
+
+    def quit(self):
+        self.window.hide()
+        Gtk.main_quit()

@@ -25,7 +25,7 @@ class context(template_context):
             GLUT.GLUT_RGBA | GLUT.GLUT_DOUBLE | GLUT.GLUT_DEPTH)
 
         GLUT.glutInitWindowSize(self.viewport[2], self.viewport[3])
-        GLUT.glutCreateWindow("pyopengl with glut")
+        self.window = GLUT.glutCreateWindow("pyopengl with glut")
 
         GLUT.glutDisplayFunc(self.render)
         GLUT.glutIdleFunc(self.render)
@@ -43,3 +43,6 @@ class context(template_context):
     def run(self):
         GLUT.glutMainLoop()
         return True
+
+    def quit(self):
+        GLUT.glutDestroyWindow(self.window)

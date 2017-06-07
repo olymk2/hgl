@@ -6,19 +6,10 @@ import sys
 import pytest
 
 import numpy as np
-# sys.path.append(os.path.abspath('../'))
-from hgl import context as ctx
-from hgl.context import gtkglarea_context
-from hgl.context import pygame_context
-from hgl.context import glut_context
+from tests.helper import versions
+from tests.helper import contexts
 
 from OpenGL import GL
-
-versions = [(3, 3), (4, 0), (4, 3), (4, 5)]
-contexts = [
-    (gtkglarea_context.context, 'gtk'),
-    (glut_context.context, 'glut'),
-    (pygame_context.context, 'pygame')]
 
 
 @pytest.mark.parametrize("version", versions)
@@ -36,10 +27,10 @@ def test_change_vertex_array(name, test_ctx, version):
 
     class custom_context(test_ctx):
         default_vertices = np.array([
-            -0.5,  0.5, 0.0,1.0,
-            -0.5,  -0.5, 0.0, 0.5,
-            0.5,  0.5, 0.0, 1.0,
-            0.5,  -0.5, 0.0, 1.0],
+            -0.5, 0.5, 0.0, 1.0,
+            -0.5, -0.5, 0.0, 1.0,
+            0.5, 0.5, 0.0, 1.0,
+            0.5, -0.5, 0.0, 1.0],
             dtype=np.float32)
 
         default_indicies = np.array([

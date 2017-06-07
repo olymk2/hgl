@@ -90,9 +90,11 @@ class template_context(object):
             stride=0,
             pointer=ctypes.c_void_p(0))
 
+        #data size, vertex length
+        buffer_size = 4 * len(self.default_vertices)
         # Copy data to the buffer
         GL.glBufferData(
-            GL.GL_ARRAY_BUFFER, 48, self.default_vertices, GL.GL_STATIC_DRAW)
+            GL.GL_ARRAY_BUFFER, buffer_size, self.default_vertices, GL.GL_STATIC_DRAW)
 
         # Unbind buffers once done
         GL.glBindVertexArray(0)
@@ -101,7 +103,8 @@ class template_context(object):
 
     def draw_data(self):
         GL.glBindVertexArray(self.vertex_array_object)
-        GL.glDrawArrays(mode=GL.GL_TRIANGLES, first=0, count=3)
+        # GL.glDrawArrays(mode=GL.GL_TRIANGLES, first=0, count=3)
+        GL.glDrawArrays(GL.GL_TRIANGLES, 0, 4)
         GL.glBindVertexArray(0)
 
     def draw(self):
@@ -142,6 +145,9 @@ class template_context(object):
 
         image.save(filename)
         return filename
+
+    def quit(self):
+        raise NotImplementedError
 
     def run(self):
         raise NotImplementedError
