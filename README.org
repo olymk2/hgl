@@ -17,34 +17,49 @@ pytest
 ** Examples
 Below are a few examples of using this library to knock up some quick examples.
 *** Using different rendering contexts
-Using glut context
-#+BEGIN_SRC python :session :results file
+**** Using gtkglarea context
+#+BEGIN_SRC python :results file 
+from hgl.context.gtkglarea_context import context
+return context(version=(4, 3)).save(filename='./docs/gtkglarea_context_example.png')
+#+END_SRC
+
+#+RESULTS:
+[[file:./docs/gtkglarea_context_example.png]]
+**** Using glut context
+#+BEGIN_SRC python :results file
 from hgl.context.glut_context import context
-context(version=(4, 3)).save(filename='/tmp/test_glut_context.png')
+return context(version=(4, 3)).save(filename='./docs/glut_context_example.png')
 #+END_SRC
 
 #+RESULTS:
-[[file:/tmp/test_glut_context.png]]
+[[file:./docs/glut_context_example.png]]
 
-Using pygame context
-#+BEGIN_SRC python :session :results file
-from hgl.context.pygame_context import context
-context(version=(4, 3)).save(filename='/tmp/test_pyame_context.png')
+**** Using pygame context
+#+BEGIN_SRC python :results file 
+from hgl.context.gtkglarea_context import context
+return context(version=(4, 3)).save(filename='./docs/pyame_context_example.png')
 #+END_SRC
 
 #+RESULTS:
-[[file:]]
+[[file:/tmp/test_pyame_context.png]]
 
-
+*** Extending an existing context
 If you want to modify the defaults you can just inherit the context and replace the methods.
-#+BEGIN_SRC python :session :results file
-from hgl.context.pygame_context import context
+#+BEGIN_SRC python :results file
+from hgl.context.gtkglarea_context import context
 
 class custom_context(context):
-    pass
+    default_fragment_shader = ["""
+        #version 330
+        out vec4 fragColor;
+        void main()
+        {
+            fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+        }"""]
 
 my_ctx = custom_context(version=(4,3))
-my_ctx.save(filename='/tmp/test_custom_context.png')
+return my_ctx.save(filename='./docs/overriden_context.png')
 #+END_SRC
 
 #+RESULTS:
+[[file:./docs/overriden_context.png]]
