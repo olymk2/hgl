@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# https://github.com/renpy/pygame_sdl2/archive/master.zip#egg=pygame_sdl2
 
 from setuptools import setup, find_packages
 
@@ -29,7 +28,7 @@ dependency_links=[
 setup(
     name='hgl',
     version='0.1.0',
-    description='Simple helper library for testing out opengl code',
+    description='Simple OpenGL helper library for testing code and writting examples with minimal fuss',
     long_description=readme,
     author='Oliver Marks',
     author_email='oly@digitaloctave.com',

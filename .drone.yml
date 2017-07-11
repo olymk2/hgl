@@ -5,7 +5,7 @@ workspace:
 pipeline:
   tests:
     image: thewtex/opengl-mesa
-    environment:
+    environment:https://github.com/olymk2/hgl.git
       - PYTHONUSERBASE=/drone/src/cache/packages
     commands:
       - apt update -y
@@ -22,11 +22,11 @@ pipeline:
       - python3 setup.py pytest
 
 # todo set this up properly
-# publish:
-#   pypi:
-#     repository: https://pypi.python.org/pypi
-#     username: guido
-#     password: secret
-#     distributions:
-#       - sdist
-#       - bdist_wheel
+publish:
+  pypi:
+    repository: https://pypi.python.org/pypi
+    username: ${pypi_username}
+    password: ${pypi_password}
+    distributions:
+      - sdist
+      - bdist_wheel

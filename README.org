@@ -1,18 +1,23 @@
 HGL - Helper GL
 
 This is a simple library used for writing quick tests and examples programs while avoiding some of the boiler plate code you normally require.
+It has also been designed to be used nicely in emacs org-mode so you can do literate programming, quickly testing and annotate code as you go.
 
-Currently only tested on linux, but will likely work on other platforms dependant on the context you use.
+Currently only tested on linux, but will likely work on other platforms dependant on the context you use to render.
 
 Current contexts supported are:
 + pySDL2 context
-+ pygame-sdl2 context but its a pain to install
++ pygame-sdl2 context (its a pain to install no pip)
 + gtkglarea context
 + glut context
 
 * Installation
+You install this using pip.
+#+BEGIN_SRC bash
+pip install hgl
+#+END_SRC
 
-This library is not yet on pypy but hopefully will be soon, for now install with the command below inside the project.
+Alternatively you can use the commend below to install directly from the downloaded source.
 #+BEGIN_SRC bash
 python3 setup.py develop
 #+END_SRC
