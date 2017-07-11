@@ -5,7 +5,7 @@ import os
 import sys
 import math
 sys.path.append(os.path.abspath('../../'))
-from FabriCAD.settings import X, Y, Z
+from hgl.settings import X, Y, Z
 
 def vector(p1, p2):
     """Given two points return vector direction of first point heading towards the second point

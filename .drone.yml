@@ -1,0 +1,32 @@
+workspace:
+  base: /drone
+  path: src
+
+pipeline:
+  tests:
+    image: thewtex/opengl-mesa
+    environment:
+      - PYTHONUSERBASE=/drone/src/cache/packages
+    commands:
+      - apt update -y
+      - apt install -y $(cat apt-requirements.txt)
+#      - pip2 install --cache-dir /drone/src/cache/pip -r /drone/src/requirements.txt
+      - ls -la /drone/src/
+      - mkdir -p /usr/lib/python3.4/site-packages/
+      - pip install -r /drone/src/pip-requirements.txt
+      # - pip3 --cache-dir /drone/src/cache/pip install -r /drone/src/pip-requirements.txt
+      - pip3 --help 
+      - pip3 --version
+      - pip3 install -r /drone/src/pip-requirements.txt
+      - python3 setup.py develop
+      - python3 setup.py pytest
+
+# todo set this up properly
+# publish:
+#   pypi:
+#     repository: https://pypi.python.org/pypi
+#     username: guido
+#     password: secret
+#     distributions:
+#       - sdist
+#       - bdist_wheel

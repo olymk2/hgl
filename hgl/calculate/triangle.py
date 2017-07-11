@@ -1,7 +1,7 @@
 import os
 import sys
 import math
-from FabriCAD.settings import X, Y, Z
+from hgl.settings import X, Y, Z
 
 
 def is_counter_clockwise(p1, p2, p3):

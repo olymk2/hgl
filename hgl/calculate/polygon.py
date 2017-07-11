@@ -2,7 +2,7 @@ import os
 import sys
 import math
 sys.path.append(os.path.abspath('../../'))
-from FabriCAD.settings import X, Y, Z
+from hgl.settings import X, Y, Z
 
 #rename to winding, is this even valid 
 

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import gc
 import ctypes
 import OpenGL
 from OpenGL.GL import shaders
@@ -22,16 +23,24 @@ class template_context(object):
     far_plane = 100.0
 
     # test triangle
-    default_vertices = np.array(
-        [0.6,  0.6, 0.0, 1.0, -0.6,  0.6, 0.0, 1.0, 0.0, -0.6, 0.0, 1.0],
+    vertex_size = 3
+    vertex_list = np.array([
+         0.6,  0.6, 0.0,
+        -0.6,  0.6, 0.0,
+         0.0, -0.6, 0.0],
         dtype=np.float32)
+    vertex_size = 3
+    vertex_stride = vertex_size * 4
+
+    texture_id = None
+    texture_offset = 0
 
     default_vertex_shader = ["""
         #version 330
-        in vec4 position;
+        in vec3 vertex_pos;
         void main()
         {
-            gl_Position = position;
+            gl_Position = vec4(vertex_pos, 1.0);
         }"""]
 
     default_fragment_shader = ["""
@@ -43,11 +52,15 @@ class template_context(object):
         }"""]
     shader = None
 
-    def __init__(self):
+    def __init__(self, version=(4, 5)):
         raise NotImplementedError
 
-    def __call__(self):
-        self.__init__()
+    def __call__(self, version=(4, 5)):
+        self.__init__(version)
+
+
+    def widget_error(self, widget):
+        pass
 
     def info(self):
         print("Using %s display manager" % os.getenv('XDG_SESSION_TYPE'))
@@ -57,7 +70,12 @@ class template_context(object):
             if plugin.loaded:
                 print('PYOPENGL Using %s ' % plugin.name)
 
+    def test_opengl_methods(self):
+        if bool(GL.glGenVertexArrays) is False:
+            print('glGenVertexArrays not available on this machine')
+
     def update(self):
+        self.test_opengl_methods()
         vs = shaders.compileShader(
             self.default_vertex_shader,
             GL.GL_VERTEX_SHADER)
@@ -75,23 +93,64 @@ class template_context(object):
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self.vertex_buffer)
 
         # Get position variable form the shader and store
-        self.position = GL.glGetAttribLocation(self.shader, 'position')
+        self.position = GL.glGetAttribLocation(self.shader, 'vertex_pos')
         GL.glEnableVertexAttribArray(self.position)
 
         # describe the data layout
-        GL.glVertexAttribPointer(
-            self.position, 4, GL.GL_FLOAT, False, 0, ctypes.c_void_p(0))
+        # GL.glVertexAttribPointer(
+        #     self.position, 4, GL.GL_FLOAT, False, 0, ctypes.c_void_p(0))
 
+
+            # glUniformMatrix4fv(shader.simple_matrix_model_view, 1, GL_FALSE, matrix_model_view)
+            # glUniformMatrix4fv(shader.simple_matrix_projection, 1, GL_FALSE, matrix_projection)
+# // connect the uv coords to the "vertTexCoord" attribute of the vertex shader
+# glEnableVertexAttribArray(gProgram->attrib("vertTexCoord"));
+# glVertexAttribPointer(gProgram->attrib("vertTexCoord"), 2, GL_FLOAT, GL_TRUE,  5*sizeof(GLfloat), (const GLvoid*)(3 * sizeof(GLfloat)));
+
+
+        GL.glVertexAttribPointer(
+            index=self.position,
+            size=3,
+            type=GL.GL_FLOAT,
+            normalized=GL.GL_FALSE,
+            stride=self.vertex_stride,
+            pointer=ctypes.c_void_p(0))
+
+        # because this is just for quick demos and will likely be overriden
+        # give easy way of enabling a texture
+        if self.texture_id is not None:
+            self.tex_uniform = GL.glGetUniformLocation( self.shader, 'quad_texture')
+            self.tex_coord = GL.glGetAttribLocation(self.shader, 'texture_pos')
+            GL.glEnableVertexAttribArray(self.tex_coord)
+            GL.glVertexAttribPointer(
+                index=self.tex_coord,
+                size=2,
+                type=GL.GL_FLOAT,
+                normalized=GL.GL_FALSE,
+                stride=self.vertex_stride,
+                pointer=ctypes.c_void_p(3*4))
+
+        # data size, vertex length
+        buffer_size = 4 * len(self.vertex_list)
         # Copy data to the buffer
         GL.glBufferData(
-            GL.GL_ARRAY_BUFFER, 48, self.default_vertices, GL.GL_STATIC_DRAW)
+            GL.GL_ARRAY_BUFFER,
+            buffer_size,
+            self.vertex_list,
+            GL.GL_STATIC_DRAW)
 
         # Unbind buffers once done
         GL.glBindVertexArray(0)
+        if self.texture_id is not None:
+            GL.glDisableVertexAttribArray(self.tex_coord)
         GL.glDisableVertexAttribArray(self.position)
         GL.glBindBuffer(GL.GL_ARRAY_BUFFER, 0)
 
     def draw_data(self):
+        if self.texture_id:
+            GL.glActiveTexture(GL.GL_TEXTURE0)
+            GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture_id)
+            GL.glUniform1i(self.tex_uniform, 0)
         GL.glBindVertexArray(self.vertex_array_object)
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, 3)
         GL.glBindVertexArray(0)
@@ -133,7 +192,13 @@ class template_context(object):
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
         image.save(filename)
+        image.close()
+        buffer = None
+        self.quit()
         return filename
+
+    def quit(self):
+        gc.collect()
 
     def run(self):
         raise NotImplementedError

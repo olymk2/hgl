@@ -1,5 +1,21 @@
+HGL - Helper GL
 
+This is a simple library used for writing quick tests and examples programs while avoiding some of the boiler plate code you normally require.
 
+Currently only tested on linux, but will likely work on other platforms dependant on the context you use.
+
+Current contexts supported are:
++ pySDL2 context
++ pygame-sdl2 context but its a pain to install
++ gtkglarea context
++ glut context
+
+* Installation
+
+This library is not yet on pypy but hopefully will be soon, for now install with the command below inside the project.
+#+BEGIN_SRC bash
+python3 setup.py develop
+#+END_SRC
 
 * Development
 
@@ -8,43 +24,113 @@ To work on this library run setup.py in develop mode to create a symlink to your
 python3 setup.py develop
 #+END_SRC
 
-
-** Testing
+* Testing
+To run the test suite you should be able to use pytest in the project root 
 #+BEGIN_SRC bash
 pytest
 #+END_SRC
 
-** Examples
+#+RESULTS:
+| =============================                          | test                 | session    | starts        | ============================== |               |                            |              |
+| platform                                               | linux2               | --         | Python        | 2.7.13,                        | pytest-3.0.6, | py-1.4.32,                 | pluggy-0.4.0 |
+| rootdir:                                               | /home/oly/repos/hgl, | inifile:   |               |                                |               |                            |              |
+| plugins:                                               | mock-1.3.0,          | cov-2.4.0, | Inomaly-0.1.0 |                                |               |                            |              |
+| collected                                              | 56                   | items      |               |                                |               |                            |              |
+|                                                        |                      |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_angles.py       | ...                  |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_boxes.py        | ...                  |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_circles.py      | ....                 |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_curves.py       | 0                    |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_grid.py         | ...                  |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_intersection.py | ..                   |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_misc.py         | ..                   |            |               |                                |               |                            |              |
+| tests/test_calculate/test_calculations_origin.py       | ..                   |            |               |                                |               |                            |              |
+| tests/test_extend_context/test_change_shaders.py       | ............         |            |               |                                |               |                            |              |
+| tests/test_extend_context/test_change_vertex_array.py  | ............         |            |               |                                |               |                            |              |
+| tests/test_gl_contexts/test_context.py                 | ............         |            |               |                                |               |                            |              |
+|                                                        |                      |            |               |                                |               |                            |              |
+| ==========================                             | 56                   | passed     | in            | 29.46                          | seconds       | ========================== |              |
+
+* Examples
 Below are a few examples of using this library to knock up some quick examples.
-*** Using different rendering contexts
-Using glut context
-#+BEGIN_SRC python :session :results file
+** Using different rendering contexts
+*** Using gtkglarea context
+#+BEGIN_SRC python :results file 
+from hgl.context.gtkglarea_context import context
+return context(version=(4, 3)).save(filename='./docs/gtkglarea_context_example.png')
+#+END_SRC
+
+#+RESULTS:
+[[file:./docs/gtkglarea_context_example.png]]
+*** Using glut context
+#+BEGIN_SRC python :results file
 from hgl.context.glut_context import context
-context(version=(4, 3)).save(filename='/tmp/test_glut_context.png')
+return context(version=(4, 3)).save(filename='./docs/glut_context_example.png')
 #+END_SRC
 
 #+RESULTS:
-[[file:/tmp/test_glut_context.png]]
+[[file:./docs/glut_context_example.png]]
 
-Using pygame context
-#+BEGIN_SRC python :session :results file
-from hgl.context.pygame_context import context
-context(version=(4, 3)).save(filename='/tmp/test_pyame_context.png')
+*** Using pygame context
+#+BEGIN_SRC python :results file 
+from hgl.context.gtkglarea_context import context
+return context(version=(4, 3)).save(filename='./docs/pyame_context_example.png')
 #+END_SRC
 
 #+RESULTS:
-[[file:]]
+[[file:./docs/pyame_context_example.png]]
 
-
+** Extending an existing context
 If you want to modify the defaults you can just inherit the context and replace the methods.
-#+BEGIN_SRC python :session :results file
-from hgl.context.pygame_context import context
+#+BEGIN_SRC python :results file
+from hgl.context.gtkglarea_context import context
 
 class custom_context(context):
-    pass
+    default_fragment_shader = ["""
+        #version 330
+        out vec4 fragColor;
+        void main()
+        {
+            fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+        }"""]
 
 my_ctx = custom_context(version=(4,3))
-my_ctx.save(filename='/tmp/test_custom_context.png')
+return my_ctx.save(filename='./docs/overriden_context.png')
 #+END_SRC
 
 #+RESULTS:
+[[file:./docs/overriden_context.png]]
+
+** Texturing
+#+BEGIN_SRC python :results file
+  import os
+  from OpenGL import GL
+  import numpy as np
+  from hgl.context.gtkglarea_context import context
+  from hgl.libs.textures import load_texture
+
+  from tests.helper import simple_texture_fs 
+  from tests.helper import simple_texture_vs 
+
+  class custom_context(context):
+      vertex_list = np.array([
+        0.6,  0.6, 0.0, 0.0, 1.0,
+        -0.6,  0.6, 0.0, 1.0, 0.0,
+        0.0, -0.6, 0.0, 0.0, 0.0],
+          dtype=np.float32)
+      vertex_size = 5
+      vertex_stride = 4 * vertex_size
+
+      default_vertex_shader = simple_texture_vs
+      default_fragment_shader = simple_texture_fs
+
+      def update(self):
+          self.texture_id = load_texture(filename='./tests/textures/testing.png')
+          super(custom_context, self).update()
+
+  my_ctx = custom_context(version=(4,3))
+  return my_ctx.save(filename='./docs/texture_context.png')
+#+END_SRC
+
+#+RESULTS:
+[[file:./docs/texture_context.png]]

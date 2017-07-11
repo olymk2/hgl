@@ -1,0 +1,6 @@
+version: '2'
+services:
+  application:
+    build: ./
+    volumes:
+      - .:/app

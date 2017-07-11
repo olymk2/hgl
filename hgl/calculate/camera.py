@@ -5,7 +5,7 @@ import os
 import sys
 import math
 sys.path.append(os.path.abspath('../../'))
-from FabriCAD.settings import X, Y, Z
+from hgl.settings import X, Y, Z
 
 def calculate_camera_plane_dimensions(viewport, location, near_plane, field_of_view, viewport_aspect):
     """ Given the camera location field of view and near plane calculate a rectangle that fits completely in the field of view """

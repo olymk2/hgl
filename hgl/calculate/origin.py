@@ -5,7 +5,7 @@ import os
 import sys
 import math
 sys.path.append(os.path.abspath('../../'))
-from FabriCAD.settings import X, Y
+from hgl.settings import X, Y
 
 
 def rotate(point, angle):

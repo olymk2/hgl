@@ -13,7 +13,7 @@ from kivy.graphics import *
 
 from kivy.graphics.opengl import glEnable
 
-from FabriCAD.hgl.context.template import template_context
+from hgl.context.template import template_context
 
 class Renderer(template_context, Widget):
     def __init__(self, **kwargs):
@@ -112,7 +112,6 @@ class Renderer(template_context, Widget):
         ]
         #Translate(0, 0, -3)
         pos = 0
-        print 'test********************'
         vertices = []
         indices = []
         for l in self.w.layers:
@@ -123,7 +122,6 @@ class Renderer(template_context, Widget):
                     vertices.append(n[2])
                     indices.append(pos)
                     pos += 1
-        print vertices
         #~ vertices = [0,0,0]
         #~ indices = [0]
         UpdateNormalMatrix()

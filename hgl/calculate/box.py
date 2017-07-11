@@ -1,7 +1,7 @@
-from FabriCAD.settings import X, Y, Z, LINE_WIDTH_ZOOM, LINE_WIDTH
-from FabriCAD.hgl.calculate.line import order_points
-from FabriCAD.hgl.calculate.line import parallel_line
-from FabriCAD.hgl.calculate.line import distance_between_points
+from hgl.settings import X, Y, Z, LINE_WIDTH_ZOOM, LINE_WIDTH
+from hgl.calculate.line import order_points
+from hgl.calculate.line import parallel_line
+from hgl.calculate.line import distance_between_points
 
 
 def box_from_line(line_start, line_end, width=LINE_WIDTH):
@@ -14,7 +14,7 @@ def box_from_line(line_start, line_end, width=LINE_WIDTH):
       points: four points for the box edges
 
     Links:
-    """ 
+    """
     distance = distance_between_points(line_start, line_end)
     p1, p3 = parallel_line(line_start, line_end, distance, width)
     p2, p4 = parallel_line(line_start, line_end, distance, -width)
@@ -31,10 +31,10 @@ def from_points(points):
       points: four points for the box edges
 
     Links:
-    """ 
+    """
     x1, x2 = points[0][X], points[0][X]
     y1, y2 = points[0][Y], points[0][Y]
-    z1, z2 = points[0][Z], points[0][Z] 
+    z1, z2 = points[0][Z], points[0][Z]
     for point in points:
         if point[X] < x1:
             x1 = point[X]
@@ -95,7 +95,7 @@ def box_size_from_line(p1, p2):
 def box_points_from_line(p1, p2):
     """ Given two points from a line order them and generate four coordinates representing a box
     which encompasses the line
-    
+
     Args:
       p1 (point): line start
       p2 (point): line end
@@ -143,7 +143,7 @@ def box_normalized_tile_offset(x_norm, y_norm, x_tile, y_tile, size=6):
 
 
 def box_tile(box, x=1, y=0):
-    """ Given 4 points of a box offset along width and height to create new parallel boxes 
+    """ Given 4 points of a box offset along width and height to create new parallel boxes
 
     Args:
 
@@ -192,21 +192,46 @@ def external_point_direction(box, point):
 
     Links:
     """
-    
+
     x_direction = 0
     y_direction = 0
 
     #outside the x coordinates
     if point[X] < box[0][X]:
-        x_direction = -1 
+        x_direction = -1
     if point[X] > box[3][X]:
-        x_direction = 1 
+        x_direction = 1
 
     #outside the x coordinates
     if point[Y] < box[0][Y]:
         y_direction = -1
-    
+
     if point[Y] > box[3][Y]:
         y_direction = 1
     return x_direction, y_direction
 
+
+def inside_bounding_box(self, point, box):
+    """test if point is within bounding box
+
+    Args:
+        point (list): X, Y, Z points
+        box (list): minx, maxx, miny, maxy
+            2d bounding box top left and bottom right coordinate
+
+    Returns:
+        bool : 1 inside 0 outside
+
+    Links:
+
+    """
+    if point[0] < self.bounds.mins.x:
+        return 0
+    if point[0] > self.bounds.maxs.x:
+        return 0
+
+    if point[1] < self.bounds.mins.y:
+        return 0
+    if point[1] > self.bounds.maxs.y:
+        return 0
+    return 1

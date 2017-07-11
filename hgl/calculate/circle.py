@@ -1,5 +1,5 @@
 import math
-from FabriCAD.hgl.calculate.line import distance_between_points, point_on_line
+from hgl.calculate.line import distance_between_points, point_on_line
 
 phi = 2 * math.pi
 

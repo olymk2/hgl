@@ -5,8 +5,8 @@ import os
 import sys
 import math
 
-from FabriCAD.hgl.calculate.point import vector_multiply
-from FabriCAD.settings import X, Y, Z
+from hgl.calculate.point import vector_multiply
+from hgl.settings import X, Y, Z
 
 # http://stackoverflow.com/questions/5443653/opengl-coordinates-from-bezier-curves
 # http://nccastaff.bournemouth.ac.uk/jmacey/RobTheBloke/www/opengl_programming.html#3

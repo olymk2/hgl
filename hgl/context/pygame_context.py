@@ -44,6 +44,10 @@ class context(template_context):
         print('Pygame sdl2 version %s.%s.%s' % pygame_sdl2.get_sdl_version())
         print('Pygame sdl2 driver %s' % pygame_sdl2.display.get_driver())
 
+    def save(self, filename='/tmp/gtkgl_context.png'):
+        pygame_sdl2.display.flip()
+        return super(context, self).save(filename=filename)
+
     def render(self):
         GL.glClearColor(0.0, 0.0, 0.0, 1.0)
         super(context, self).render()
@@ -57,3 +61,8 @@ class context(template_context):
                     running = False
             self.render()
         pygame_sdl2.quit()
+
+    def quit(self):
+        pygame_sdl2.display.quit()
+        pygame_sdl2.quit()
+        super(context, self).quit()

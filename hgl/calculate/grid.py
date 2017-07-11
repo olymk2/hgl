@@ -5,7 +5,7 @@ import os
 import sys
 import math
 sys.path.append(os.path.abspath('../../'))
-from FabriCAD.settings import X, Y, Z
+from hgl.settings import X, Y, Z
 
 def total_grid_lines_normalised(major_scale, minor_scale, width, height, depth=0):
     """Given a width height and depth calculate the total grid lines that will fit in an area

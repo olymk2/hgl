@@ -1,5 +1,5 @@
 import math
-from FabriCAD.hgl.calculate import X, Y, Z
+from hgl.calculate import X, Y, Z
 
 def distance_between_all_points(points):
     if not points:

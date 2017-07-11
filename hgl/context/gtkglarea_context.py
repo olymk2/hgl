@@ -17,23 +17,16 @@ class context(template_context):
     on_draw_displayed = False
 
     def __init__(self, shader_programs=None, version=(4, 5)):
-        screen = Gdk.Screen.get_default()
-        visual = Gdk.Screen.get_rgba_visual(screen)
+        self.screen = Gdk.Screen.get_default()
+        self.visual = Gdk.Screen.get_rgba_visual(self.screen)
 
         self.window = Gtk.Window()
         self.window.set_default_size(self.viewport[2], self.viewport[3])
 
-        Gtk.Widget.set_visual(self.window, visual)
+        Gtk.Widget.set_visual(self.window, self.visual)
 
         self.canvas = Gtk.GLArea()
         self.canvas.set_required_version(version[0], version[1])
-
-        self.vertices = [
-            0.6,  0.6, 0.0, 1.0,
-            -0.6,  0.6, 0.0, 1.0,
-            0.0, -0.6, 0.0, 1.0]
-
-        self.vertices = np.array(self.vertices, dtype=np.float32)
 
         self.canvas.connect('unrealize', self.on_unrealize)
         self.canvas.connect('realize', self.on_realize)
@@ -46,6 +39,12 @@ class context(template_context):
 
         self.window.add(self.canvas)
         self.window.show_all()
+        self.info()
+
+    def widget_error(self, widget):
+        e = widget.get_error()
+        if e:
+            print(e)
 
     def info(self):
         print('Created GTKGLAREA context')
@@ -54,12 +53,12 @@ class context(template_context):
         canvas_context.make_current()
         print('Testing features')
         print('Detected Visuals')
-        for current_visual in Gdk.Screen.list_visuals(screen):
+        for current_visual in Gdk.Screen.list_visuals(self.screen):
             print("\t%s - %s" % (current_visual.get_depth(), current_visual.get_visual_type()))
         print('Selected Visuals')
-        print("\t%s - %s" % (visual.get_depth(), visual.get_visual_type()))
+        print("\t%s - %s" % (self.visual.get_depth(), self.visual.get_visual_type()))
 
-        print('is composite %s' % Gdk.Screen.is_composited(screen))
+        print('is composite %s' % Gdk.Screen.is_composited(self.screen))
         print(canvas_context.get_version())
         print('glcontext version %d.%d' % canvas_context.get_version())
         print('glcontext legacy %s' % canvas_context.is_legacy())
@@ -78,6 +77,7 @@ class context(template_context):
         print('Shader Language version %s' % GL.glGetString(GL.GL_SHADING_LANGUAGE_VERSION).replace(b' ', b'_'))
         print('Finished feature detection')
 
+
     def on_unrealize(self, widget):
         context.make_current()
         return True
@@ -85,13 +85,13 @@ class context(template_context):
     def on_realize(self, widget):
         widget.make_current()
         GL.glClearColor(0.0, 0.0, 0.0, 1.0)
-        print(widget.get_error())
+        self.widget_error(widget)
         self.update()
         return True
 
     def on_draw(self, widget, *args):
         self.on_draw_displayed = True
-        print(widget.get_error())
+        self.widget_error(widget)
         self.draw()
         return True
 
@@ -104,7 +104,15 @@ class context(template_context):
         while self.on_draw_displayed is False:
             self.handle_events()
         self.canvas.make_current()
+        self.update()
         return super(context, self).save(filename=filename)
+        self.quit()
 
     def run(self):
         Gtk.main()
+
+    def quit(self):
+        self.handle_events()
+        self.window.hide()
+        print(Gtk.main_level())
+        Gtk.main_quit()

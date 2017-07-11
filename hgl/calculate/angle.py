@@ -5,8 +5,8 @@ import os
 import sys
 import math
 sys.path.append(os.path.abspath('../../'))
-from FabriCAD.settings import X, Y, Z
-from FabriCAD.hgl.calculate.line import vector, dot_product, distance_between_points, point_on_line
+from hgl.settings import X, Y, Z
+from hgl.calculate.line import vector, dot_product, distance_between_points, point_on_line
 
 
 def angle(p1, p2, p3):
